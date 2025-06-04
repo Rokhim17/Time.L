@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kirim Surat Waktu</title>
+</head>
+<body>
+  <h2>Kirim Surat Masa Depan</h2>
+  <form id="letterForm">
+    <textarea name="content" placeholder="Tulis surat..." required></textarea><br>
+    <input type="file" name="file"><br>
+    <input type="number" name="deliveryYear" placeholder="Tahun pengiriman (cth: 2028)" required><br>
+    <button type="submit">Kirim</button>
+  </form>
+
+  <script>
+    document.getElementById('letterForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const content = formData.get('content');
+      const deliveryYear = parseInt(formData.get('deliveryYear'));
+
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/api/letter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ content, deliveryYear })
+      });
+
+      const result = await response.json();
+      alert(result.message + "\nTanggal kirim: " + new Date(result.deliveryDate).toLocaleDateString());
+    });
+  </script>
+</body>
+</html>
